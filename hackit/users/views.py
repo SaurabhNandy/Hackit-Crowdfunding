@@ -9,25 +9,27 @@ def register(request):
 	if request.method=='POST':
 		user = UserRegisterForm(request.POST)
 		if user.is_valid():
-			user.save()
 			username = user.cleaned_data.get('username')
 			mail=user.cleaned_data.get('email')
 			if email_verify(mail):
-				messages.success(request,f'Your account couldn\'t be created.....Only Somaiya students are allowed')
+                                user.save()
+                                messages.success(request, f'Account has been created for {username}! Please login to continue')
 			else:
-				messages.success(request, f'Account has been created for {username}!Please login to continue')
+                                messages.warning(request,f'Your account couldn\'t be created.....Only Somaiya students are allowed')
+                                return redirect('user-register') 
 			return redirect('project-home')
 	else:
 		user = UserRegisterForm()
 	return render(request,'users/register.html',{'form':user})
 
 
-"""def email_verify(email):
+def email_verify(email):
 	domains = 'somaiya.edu'
 	email_domain = email.split('@')[1]
-	if email_domain in domains:
+	if email_domain == domains:
+
 		return True
-	return False"""
+	return False
 
 @login_required
 def profile(request):
